@@ -93,7 +93,6 @@ class Administrador extends Usuario{
 
     constructor(id, nome, email){
         super(id, nome, email)
-        this.nivelPermissao = nivelPermissao
     }
 
     get perfil(){
@@ -101,7 +100,7 @@ class Administrador extends Usuario{
     }
 
     toJSON(){
-        return { ...super.toJSON }
+        return { ...super.toJSON() }
     }
 
     static deJSON(obj){
