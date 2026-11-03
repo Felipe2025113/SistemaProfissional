@@ -112,11 +112,13 @@ class Administrador extends Usuario{
 class Cozinheiro extends Usuario{
     #turno
     #especialidade
+    #ativo
 
-    constructor(id, nome, email, turno, especialidade){
+    constructor(id, nome, email, turno, especialidade, ativo = false){
         super(id, nome, email)
         this.turno = turno
         this.especialidade = especialidade
+        this.ativo = ativo
     }
 
     get turno(){
@@ -145,12 +147,23 @@ class Cozinheiro extends Usuario{
         this.#especialidade = novaEspec
     }
 
+    set ativo(status) {
+        if (typeof status !== "boolean") {
+            throw new Error("O status ativo deve ser um valor booleano")
+        }
+        this.#ativo = status
+    }
+
+    aprovar() {
+        this.#ativo = true
+    }
+
     toJSON(){
-        return { ...super.toJSON(), turno: this.#turno, especialidade: this.#especialidade }
+        return { ...super.toJSON(), turno: this.#turno, especialidade: this.#especialidade, ativo: this.#ativo }
     }
 
     static deJSON(obj){
-        return new Cozinheiro(obj.id, obj.nome, obj.email, obj.turno, obj.especialidade)
+        return new Cozinheiro(obj.id, obj.nome, obj.email, obj.turno, obj.especialidade, obj.ativo ?? false)
     }
 }
 
@@ -296,6 +309,35 @@ class CadastroCozinheiro{
 
     toJSON(){
         return { nome: this.#nome, email: this.#email, turno: this.#turno, especialidade: this.#especialidade }
+    }
+}
+
+class AlterarSenha {
+    #senhaAtual
+    #novaSenha
+
+    constructor(senhaAtual, novaSenha) {
+        this.senhaAtual = senhaAtual
+        this.novaSenha = novaSenha
+    }
+
+    set senhaAtual(senha) {
+        if (typeof senha !== "string" || senha === "") {
+            throw new Error("Informe a senha atual / provisória")
+        }
+        this.#senhaAtual = senha
+    }
+
+    set novaSenha(senha) {
+        const senhaValida = /^(?=.*[A-Za-z])(?=.*\d).{10,}$/
+        if (typeof senha !== "string" || !senhaValida.test(senha)) {
+            throw new Error("A nova senha deve ter pelo menos 10 caracteres, contendo letras e números.")
+        }
+        this.#novaSenha = senha
+    }
+
+    toJSON() {
+        return { senhaAtual: this.#senhaAtual, novaSenha: this.#novaSenha }
     }
 }
 
